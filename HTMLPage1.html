@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Projectile Motion Simulation</title>
+    <link rel="stylesheet" href="StyleSheet1.css" />
+</head>
+
+<body>
+    <h1>Karthik Seetharaman's Projectile Motion Simulation</h1>
+    <form>
+        <label for="yi">Initial height:</label>
+        <input type="number" id="yi" name="yi"><br><br>
+        <label for="vi">Initial velocity:</label>
+        <input type="number" id="vi" name="vi"><br><br>
+        <label for="theta">Initial angle (in degrees):</label>
+        <input type="number" id="theta" name="theta"><br><br>
+        <button id="start" type="button" onclick="do_animate()">Start</button>
+    </form>
+    <br />
+    <canvas id="theCanvas" width="800" height="600" style="border:1px solid #000000;">
+    </canvas>
+    <script>
+        var theCanvas = document.getElementById("theCanvas");
+        var theContext = theCanvas.getContext("2d");
+        var xi;
+        var yi;
+        var x;
+        var y;
+        var t;
+        var theta;
+        var vi;
+        var vxi;
+        var vyi;
+        var vx;
+        var vy;
+        var ax;
+        var ay;
+        var s;
+        function drawCircle(x, y) {
+            theContext.beginPath();
+            theContext.fillStyle = "red";
+            theContext.arc(x, y, 5, 0, 2 * Math.PI);
+            theContext.fill();
+        }
+        function repaint(x, y) {
+            theContext.fillStyle = "white";
+            theContext.fillRect(0, 0, 800, 600);
+            drawCircle(x, y);
+        }
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        async function do_animate() {
+            xi = 0;
+            yi = parseInt(document.getElementById("yi").value);
+            x = xi;
+            y = yi;
+            t = 0;
+            theta = parseInt(document.getElementById("theta").value);
+            vi = parseInt(document.getElementById("vi").value);
+            vxi = vi * Math.cos(theta * Math.PI / 180);
+            vyi = vi * Math.sin(theta * Math.PI / 180);
+            vx = vxi;
+            vy = vyi;
+            ax = 0;
+            ay = -9.8;
+            s = vi;
+            my_animate();
+        }
+        async function my_animate() {
+            drawCircle(xi, 600-4*yi);
+            while (y > 0) {
+                t += 0.01;
+                await sleep(1);
+                x = (xi + vxi * t + 0.5 * ax * t * t);
+                y = yi + vyi * t + 0.5 * ay * t * t;
+                vx = vxi + ax * t;
+                vy = vyi + ay * t;
+                s = Math.sqrt(vx * vx + vy * vy);
+                repaint(4 * x, 600 - 4 * y);
+                var tOut = Math.round(1000 * t) / 1000;
+                document.getElementById("time").innerHTML = tOut;
+                var xpos = Math.round(1000 * x) / 1000;
+                document.getElementById("xpos").innerHTML = xpos;
+                var ypos = Math.round(1000 * y) / 1000;
+                if (ypos >= 0) {
+                    document.getElementById("ypos").innerHTML = ypos;
+                }
+                else {
+                    document.getElementById("ypos").innerHTML = 0;
+                }
+                var xvel = Math.round(1000 * vx) / 1000;
+                document.getElementById("xvel").innerHTML = xvel;
+                var yvel = Math.round(1000 * vy) / 1000;
+                document.getElementById("yvel").innerHTML = yvel;
+                var speed = Math.round(1000 * s) / 1000;
+                document.getElementById("speed").innerHTML = speed;
+            }
+            x = xi;
+            y = yi;
+            t = 0;
+        }
+    </script>
+    <table>
+        <tr>
+            <th>Variable</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td>Time (s)</td>
+            <td id="time"></td>
+        </tr>
+        <tr>
+            <td>X-position (m)</td>
+            <td id="xpos"></td>
+        </tr>
+        <tr>
+        <td>Y-position (m/s)</td>
+        <td id="ypos"></td>
+        </tr>
+        <tr>
+            <td>X-velocity (m/s)</td>
+            <td id="xvel"></td>
+        </tr>
+        <tr>
+            <td>Y-velocity (m/s)</td>
+            <td id="yvel"></td>
+        </tr>
+        <tr>
+            <td>Speed (m/s)</td>
+            <td id="speed"></td>
+        </tr>
+    </table>
+</body>
+</html>
